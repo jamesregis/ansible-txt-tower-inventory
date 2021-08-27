@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    url: https://{{ tower }}api/v2/groups/{{ group_id }}/hosts/
+    user: 'my_user'
+    password: 'my_password'
+    org: Default
+    validate_certs: no
+    inventory_file: "hosts.txt"
+    python_interpreter: /usr/bin/python2.7
+    group_id: '119'
+
+  pre_tasks:
+   - setup:
+      gather_subset:
+       - '!all'
+
+  tasks:
+    - name: Read hosts from TXT file
+      set_fact:
+        servers: "{{ lookup('file', inventory_file) }}"
+
+    - name: Create inventory
+      uri:
+        url: "{{ url }}"
+        user: "{{ user }}"
+        password: "{{ password }}"
+        force_basic_auth: yes
+        method: POST
+        body_format: "json"
+        validate_certs: "{{ validate_certs }}"
+        status_code: 201
+        body: "{{ lookup('template', 'inventory.json.j2') }}"
+      loop: "{{ servers.splitlines() }}"
