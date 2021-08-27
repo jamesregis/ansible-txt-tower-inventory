@@ -4,7 +4,7 @@
   gather_facts: no
 
   vars:
-    url: https://{{ tower }}api/v2/groups/{{ group_id }}/hosts/
+    url: https://{{ tower }}/api/v2/groups/{{ group_id }}/hosts/
     user: 'my_user'
     password: 'my_password'
     org: Default
